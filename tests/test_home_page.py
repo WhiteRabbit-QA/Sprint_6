@@ -21,10 +21,9 @@ class TestHomePage:
             pytest.param(*(6, Answers.answer_text[6]), id="Seventh_question"),
             pytest.param(*(7, Answers.answer_text[7]), id="Eighth_question")
         ])
-    def test_correct_answers_for_questions(self, driver, click_cookies_button, n, expected_result):
+    def test_correct_answers_for_questions(self, driver, accept_cookies, n, expected_result):
         home = HomePage(driver)
         with allure.step('Скролл страницы до раздела "Вопросы о важном"'):
             home.scroll_to_element(HomePageLocators.TITLE_ACCORDION)
-        with allure.step('Кликнуть на вопрос и считать текст ответа'):
-            text = home.get_text_answer_for_ich_question(HomePageLocators.QUESTIONS, HomePageLocators.ANSWERS, n)
+        text = home.get_text_answer_for_ich_question(n)
         assert text == expected_result

@@ -1,6 +1,5 @@
 import allure
 import pytest
-from selenium.webdriver.common.by import By
 from locators.header_locators import HeaderLocators
 from locators.home_page_locators import HomePageLocators
 from pages.home_page import HomePage
@@ -14,7 +13,7 @@ class TestOrderPage:
     @allure.title('Проверка создания заказа через две точки входа: кнопка "Заказать" в хедере и внизу страницы')
     @pytest.mark.parametrize('locator',
                              [HeaderLocators.ORDER_BUTTON_ON_HEADER, HomePageLocators.ORDER_BUTTON_ON_PAGE])
-    def test_create_new_order_with_two_order_button(self, driver, click_cookies_button, locator):
+    def test_create_new_order_with_two_order_button(self, driver, accept_cookies, locator):
         home = HomePage(driver)
         order = OrderPage(driver)
         with allure.step('Нажать на кнопку "Заказать"'):
@@ -29,7 +28,7 @@ class TestOrderPage:
 
     @allure.story('Клик на логотип после оформления заказа')
     @allure.title('Проверка перехода на главную страницу по клику на лого "Самокат" после оформления заказа')
-    def test_click_logo_scooter_after_new_order(self, driver, click_cookies_button):
+    def test_click_logo_scooter_after_new_order(self, driver, accept_cookies):
         home = HomePage(driver)
         order = OrderPage(driver)
         with allure.step('Нажать на кнопку "Заказать"'):
@@ -41,12 +40,12 @@ class TestOrderPage:
                                             CorrectUserData.cnt_rental_days[3], CorrectUserData.color_scooter[0],
                                             CorrectUserData.comment)
         with allure.step('Нажать на логотип "Самокат"'):
-            order.click_logo_scooter()
+            home.click_logo_scooter()
         assert home.check_title_page()
 
     @allure.story('Клик на логотип после оформления заказа')
     @allure.title('Проверка редиректа на страницу "Дзена" по клику на лого "Яндекс" после оформления заказа')
-    def test_click_logo_yandex_after_new_order(self, driver, click_cookies_button):
+    def test_click_logo_yandex_after_new_order(self, driver, accept_cookies):
         home = HomePage(driver)
         order = OrderPage(driver)
         with allure.step('Нажать на кнопку "Заказать"'):
@@ -58,8 +57,8 @@ class TestOrderPage:
                                             CorrectUserData.cnt_rental_days[3], CorrectUserData.color_scooter[0],
                                             CorrectUserData.comment)
         with allure.step('Нажать на логотип "Яндекс"'):
-            order.click_logo_yandex()
+            home.click_logo_yandex()
         with allure.step('Перейти на открывшуюся вкладку браузера'):
             order.switch_to_window(-1)
-        order.find_visibility_element((By.XPATH, "//*[text()='Удобный и быстрый Яндекс Браузер с нейросетями']"))
-        assert order.get_current_url() == "https://dzen.ru/?yredirect=true"
+        url = home.get_url_new_window()
+        assert url == "https://dzen.ru/?yredirect=true"
